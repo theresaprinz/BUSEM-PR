@@ -795,6 +795,12 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         visualizationTabs.setSelectedTab(overall);
     }
 
+    private void updateTabSheet() {
+        Component prevTab = visualizationTabs.getSelectedTab();
+        visualizationTabs.setSelectedTab(visualizationTabs.getTab(visualizationTabs.getComponentCount()-1));
+        visualizationTabs.setSelectedTab(prevTab);
+    }
+
     private VisualizeModel createVisualizeModel(int width, int height) {
         String selected = visualizationTabs.getSelectedTab().getCaption();
         visualizeModel = new VisualizeModel(selected, this, width, height);
@@ -1154,6 +1160,7 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         for (Subject s : currentInstance.getProcess().getSubjects()) {
             fillSubjectPanel(s);
         }
+        updateTabSheet();
         if (initialStartup) {
             differentProcess.setVisible(true);
             initialStartup = false;
@@ -1191,7 +1198,7 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         }
 
         if (currentInstance.processFinished()) {
-            simulate.setVisible(false);
+            // simulate.setVisible(false);
             // LogHelper.logDebug("Process finished, offering to restart ...");
             mainLayoutFrame.removeComponent(scaffoldingPanel);
             scaffoldingPanel.setVisible(false);
