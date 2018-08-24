@@ -1,23 +1,11 @@
-# VirtualEnactment
+# COMMONING-HOUSING
 
-A web-based application (using [Vaadin][1]), which implements the concept of "Elaboration through Virtual Enactment". This approach is used to reflect on, validate and modify existing work process models in collaborative settings of stakeholders. The details are summarized and scientifically grounded in a [working paper][2] I wrote. 
-
-The motivation and larger context for this approach is grounded in the hypothesis that workers themselves should be supported in understanding how they are embedded in a collaborative socio-technical work system and should be able the models that aim at influencing their work processes. I have described this idea in much extent in an [article][3] that was published in the journal ["Information and Management"][4]. 
-
-## Usage
-
-The committed files contain the complete maven configuration for the project. It does not rely on any external libraries aside maven. Furthermore, the configuration files for the IntelliJ IDE are included - you might want to dismiss them, if you use something else.
-
-## Branching Policy
-
-From the commit tagged as release v2.0 on, the following branching policy applies:
-- 'master' only contains release commits
-- the main development branch is named 'develop'
-- feature branches are branched and merged to 'develop' only
-- release-branches are branched from 'develop' and are merged to 'master' only after testing
-- merges are made as separate commits even if fast-forward merging would be possible to preserve the branch history
-
-If you want to contribute, you might want to have a look at the open issues and projects specified in this repository. While [issues][5] point at concrete bugs or potential enhancements that have been identified during testing and real-world deployment, the [projects][6] outline the general directions of further development. Feel free to contact [me][7], if you have any questions on any of the projects, or simply comment on any of the open issues. 
+Im Rahmen unseres Praktikums haben wir (Theresa Prinz und Sonja Polt) das Thema Commons untersucht und im Zuge einer Fallstudie Housing – „Selbstorganisiert wohnen, solidarisch wirtschaften“ bearbeitet. 
+Die Idee war es einer Drittperson, die mit dem Thema Commoning soweit noch nie etwas zu tun hatte, aber die Grundidee interessant findet, anhand unserer Fallstudie einen kurzen Überblick und ein Grundverständnis zu geben. 
+Nach einer Recherche wie wir Prozesse einer Drittperson durch Prozessausführung näher bringen könnten, stießen wir auf ein existierendes Tool des Communication Engineering Institutes, welches die Ausführung von subjektorientierten Prozessen erlaubt. Dieses Tool ist unter http://adaptivetesting.ce.jku.at/VirtualEnactment/ abrufbar und steht unter https://github.com/win-ce/VirtualEnactment zum Download bereit. Die Arbeit von Oppl [1] zur Anwendung steht unter https://zenodo.org/record/207008#.W38asi3qhhF zum Download bereit. 
+Um einen Fehler der originalen Anwendung zu beheben wurde die Ordnerstruktur verändert, da bei der Ausführung der originalen Anwendung die web.xml nicht gefunden wurde. Eine weitere Exception konnte behoben werden indem im File log4j.properties die Einstellung für das Log File auf „log4j.appender.file.File=logs/VirtualEnactment.log“ geändert wurde. 
+Da wir nicht die gesamte Funktionalität der Applikation benötigten, wurden einige Teile durch Kommentare ausgehängt. Das UI wurde auch etwas umorganisiert und um unsere Inhalte erweitert.
+Grundsätzlich wurden von der Applikation VirtualEnactment nur die Klassen „DemoProcess“, „CoMPArEUI“ und „ProcessSelectorUI“ editiert, wobei die Klasse „ProcessSelectorUI“ im Laufe des Projektes ebenfalls ausgehängt wurde und somit die Änderungen hinfällig sind.  
 
 ## License
 
