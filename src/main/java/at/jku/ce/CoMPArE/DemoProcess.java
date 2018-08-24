@@ -388,7 +388,7 @@ public class DemoProcess {
         State state_mieter = mieter.setFirstState(new RecvState("Angebot erhalten", kaufangebot));
         state_mieter = state_mieter.addNextState(new ActionState("Entscheidung treffen"));
         temp = state_mieter.addNextState(new SendState("Annahme senden", kaufannahme), new Condition("Angebot annehmen"));
-        state_mieter.addNextState(new SendState("Ablehnung senden", kaufablehnung), new Condition("Angebot ablehnen"));
+        state_mieter.addNextState(new SendState("Ablehnung senden", kaufablehnung, true), new Condition("Angebot ablehnen"));
         state_mieter = temp;
 
         state_mieter = state_mieter.addNextState(new ActionState("Informationen sammeln"));
@@ -417,7 +417,7 @@ public class DemoProcess {
         state_gmbh = state_gmbh.addNextState(new SendState("Gründungsabwicklung", gmbhabwicklung));
         state_gmbh = state_gmbh.addNextState(new ActionState("Hausbesitz GmbH Gründung abwickeln"));
         state_gmbh = state_gmbh.addNextState(new ActionState("Immobilienkauf vorbereiten"));
-        state_gmbh.addNextState(new SendState("Kauf Abwicklung", kaufabwicklung));
+        state_gmbh = state_gmbh.addNextState(new SendState("Kauf Abwicklung", kaufabwicklung));
 
         state_gmbh = state_gmbh.addNextState(new ActionState("Immobilienkauf abwicklen"));
         state_gmbh = state_gmbh.addNextState(new SendState("Bestätigung senden", bestätigung_gmbhgründung));
@@ -438,7 +438,7 @@ public class DemoProcess {
 
     public static Process getTransformationsProcess() {
 
-        Process transProz = new Process("Transformations Prozess");
+        Process transProz = new Process("Transformationsprozess");
 
         //Subjects
         Subject immoanb = new Subject("Immobilienanbieter");
@@ -511,7 +511,7 @@ public class DemoProcess {
         state_wohngen = state_wohngen.addNextState(new ActionState("Entscheidung fällen"));
 
         temp = state_wohngen.addNextState(new ActionState("Immobilie zum Kauf anbieten"), new Condition("Immobilie verkaufen"));
-        state_wohngen.addNextState(new ActionState("Idee verwerfen", true), new Condition("Immobilie nicht verkaufen - weiter wie beim traditionellen Prozess"));
+        state_wohngen.addNextState(new ActionState("Vorgehen wie im traditionellen Prozess", true), new Condition("Immobilie nicht verkaufen"));
         state_wohngen = temp;
         state_wohngen = state_wohngen.addNextState(new SendState("Angebot senden", kaufangebot_gen_mie));
 
@@ -530,7 +530,7 @@ public class DemoProcess {
         State state_mieter = mieter.setFirstState(new RecvState("Angebot erhalten", kaufangebot_gen_mie));
         state_mieter = state_mieter.addNextState(new ActionState("Entscheidung treffen"));
         temp = state_mieter.addNextState(new SendState("Annahme senden", kaufannahme_gen_mie), new Condition("Angebot annehmen"));
-        state_mieter.addNextState(new SendState("Ablehnung senden", kaufablehnung_gen_mie), new Condition("Angebot ablehnen"));
+        state_mieter.addNextState(new SendState("Ablehnung senden", kaufablehnung_gen_mie, true), new Condition("Angebot ablehnen"));
         state_mieter = temp;
 
         state_mieter = state_mieter.addNextState(new ActionState("Informationen sammeln"));

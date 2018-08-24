@@ -120,14 +120,14 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         pagebody = new VerticalLayout();
         splitPanel = new HorizontalSplitPanel();
 
-//changed        createBasicLayout();
+//        createBasicLayout();
         createGlobalLayout();
         pagebody.addComponent(createPageBodyForThemenfeld());
 
         simulator = new Simulator(currentInstance, subjectPanels, this);
 //        scaffoldingManager = new ScaffoldingManager(currentProcess,scaffoldingPanel);
 
-//changed        updateUI();
+//        updateUI();
 
         Page.getCurrent().addBrowserWindowResizeListener(e -> {
             if (subjectLayout != null) {
@@ -138,10 +138,10 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         });
 
         fileStorageHandler = new FileStorageHandler();
-        if (!fileStorageHandler.isIDCookieAvailable()) {
+//        if (!fileStorageHandler.isIDCookieAvailable()) {
 //            GroupIDEntryWindow groupIDEntryWindow = new GroupIDEntryWindow(fileStorageHandler);
 //            this.getUI().addWindow(groupIDEntryWindow);
-        }
+//        }
     }
 
     private void createGlobalLayout() {
@@ -178,7 +178,6 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         rootLayout.addComponent(menue);
 
         //Pagebody
-
         pagebody.setWidth("100%");
         pagebody.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         rootLayout.addComponent(pagebody);
@@ -213,7 +212,7 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
             pagebody.addComponent(createPageBodyForCommoningProzess());
             pagebody.addComponent(createPageBodyForProzesse_Execution());
         });
-        menuebar.getItems().get(2).addItem("Transformations Prozess", e -> {
+        menuebar.getItems().get(2).addItem("Transformationsprozess", e -> {
             changeToNewProcess(DemoProcess.getTransformationsProcess());
             pagebody.removeAllComponents();
             pagebody.addComponent(createPageBodyForTransformationsProzess());
@@ -568,7 +567,7 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
 
         String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
         FileResource resource1 = new FileResource(new File(basepath + "/images/Transformation SID.png"));
-        Image image1 = new Image("ABBILDUNG 1 TRANSFORMATIONS PROZESSMODELL – SUBJEKT-INTERAKTIONS-DIAGRAMM (SID) IN S-BPMN", resource1);
+        Image image1 = new Image("ABBILDUNG 1 TRANSFORMATIONSPROZESSMODELL – SUBJEKT-INTERAKTIONS-DIAGRAMM (SID) IN S-BPMN", resource1);
         image1.setWidth("80%");
 
         Label text2 = new Label("<p>Folgend widmen wir uns der Transformation, d.h. wie der klassische Prozess" +
@@ -582,7 +581,7 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         image2Layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
         FileResource resource2 = new FileResource(new File(basepath + "/images/Transformationsprozess.png"));
-        Image image2 = new Image("ABBILDUNG 2 - TRANSFORMATIONS PROZESSMODELL IN BPMN", resource2);
+        Image image2 = new Image("ABBILDUNG 2 - TRANSFORMATIONSPROZESSMODELL IN BPMN", resource2);
         image2.setWidth("100%");
         Label text3 = new Label("<p>Wie sich die Subjekte im Detail verhalten wird in Abbildung 2 dargestellt" +
                 " und nachfolgend erklärt. </p>", ContentMode.HTML);
@@ -735,18 +734,14 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         restart = new Button("Prozess neustarten");
         restart.addClickListener(e -> {
             LogHelper.logInfo("Execution: " + currentProcess + ": process restarted");
-            mainLayoutFrame.removeAllComponents();
-            createGlobalLayout();
-            pagebody.removeAllComponents();
-            pagebody.addComponent(createPageBodyForProzesse_Execution()); //todo neu check
             currentInstance = new Instance(currentProcess);
-            simulator = new Simulator(currentInstance, subjectPanels, this);
+            //simulator = new Simulator(currentInstance, subjectPanels, this);
             updateUI();
         });
 
         if (onboardingActive) simulate.setVisible(false);
         toolBar.addComponent(restart);
-//changed        toolBar.addComponent(differentProcess);
+//        toolBar.addComponent(differentProcess);
         toolBar.setSpacing(true);
         return toolBar;
 
@@ -823,272 +818,6 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
 
         }
         return visualizeModel;
-    }
-
-
-    private void createBasicLayout() {
-
-//        LogHelper.logDebug("Building basic layout");
-        mainLayoutFrame = new HorizontalLayout();
-
-//        SliderPanel scaffoldingSlider = createScaffoldingSlider(process, instance);
-//        visualizationSlider = createVisualizationSlider();
-        historySlider = createHistorySlider();
-
-        mainInteractionArea = new VerticalLayout();
-
-        HorizontalLayout toolBar = createToolbar();
-        Component subjects = createSubjectLayout((int) (this.getPage().getBrowserWindowWidth() * (splitPanel.getSplitPosition() / 100)));
-
-        HorizontalLayout hPadding = new HorizontalLayout();
-        hPadding.setHeight("1px");
-        hPadding.setWidth((this.getPage().getBrowserWindowWidth() - 150) + "px");
-        mainInteractionArea.addComponent(hPadding);
-        mainInteractionArea.addComponent(subjects);
-        mainInteractionArea.addComponent(toolBar);
-        createTabSheet();
-        mainInteractionArea.addComponent(visualizationTabs);
-//        mainInteractionArea.addComponent(scaffoldingPanel);
-        if (onboardingActive) scaffoldingPanel.setVisible(false);
-        //       mainInteractionArea.setMargin(true);
-        //      mainInteractionArea.setSpacing(true);
-
-
-        VerticalLayout vPadding = new VerticalLayout();
-        vPadding.setWidth("50px");
-        vPadding.setHeight(this.getPage().getBrowserWindowHeight() + "px");
-
-
-//        mainLayoutFrame.addComponent(scaffoldingSlider);
-//        mainLayoutFrame.addComponent(visualizationSlider);
-        mainLayoutFrame.addComponent(historySlider);
-//        if (onboardingActive) visualizationSlider.setVisible(false);
-//        mainLayoutFrame.addComponent(vPadding);
-        mainLayoutFrame.addComponent(mainInteractionArea);
-
-        this.setContent(mainLayoutFrame);
-
-    }
-
-    private SliderPanel createScaffoldingSlider(Process process, Instance instance) {
-        return new SliderPanelBuilder(scaffoldingPanel, "What to consider").mode(SliderMode.LEFT)
-                .tabPosition(SliderTabPosition.BEGINNING).style(SliderPanelStyles.COLOR_WHITE).flowInContent(true).animationDuration(500).build();
-
-    }
-
-    private SliderPanel createVisualizationSlider() {
-        VerticalLayout visualizationSliderContent = new VerticalLayout();
-        visualizationSliderContent.removeAllComponents();
-        visualizationSliderContent.setWidth((this.getPage().getBrowserWindowWidth() - 150) + "px");
-        visualizationSliderContent.setHeight((this.getPage().getBrowserWindowHeight() - 150) + "px");
-        visualizationSliderContent.setMargin(true);
-        visualizationSliderContent.setSpacing(true);
-
-        createTabSheet();
-        visualizationSliderContent.addComponent(visualizationTabs);
-
-        final SliderPanel visualizationSlider =
-                new SliderPanelBuilder(visualizationSliderContent, "Show behaviour").mode(SliderMode.LEFT)
-                        .tabPosition(SliderTabPosition.BEGINNING).style(SliderPanelStyles.COLOR_WHITE).flowInContent(true).animationDuration(500).build();
-
-        visualizationSlider.addListener(this);
-        return visualizationSlider;
-    }
-
-    @Override
-    public void onToggle(boolean b) {
-        if (b && !selectionMode) {
-
-            String toBeActivated = null;
-            Set<Subject> candidates = new HashSet<>();
-            for (Subject s : subjectPanels.keySet()) {
-                if (currentInstance.subjectCanProgress(s)) candidates.add(s);
-            }
-            if (candidates.size() == 0) toBeActivated = "Interaktionen";
-            else if (candidates.size() == 1) toBeActivated = candidates.iterator().next().toString();
-            else if (candidates.contains(lastActiveSubject)) toBeActivated = lastActiveSubject.toString();
-            else toBeActivated = candidates.iterator().next().toString();
-
-            Iterator<Component> i = visualizationTabs.iterator();
-            while (i.hasNext()) {
-                Component tab = i.next();
-                if (tab.getCaption().equals(toBeActivated)) {
-                    if (visualizationTabs.getSelectedTab() == tab) {
-                        doNotNotifyScaffoldingManager = true;
-                        visualizationTabs.setSelectedTab(visualizationTabs.getComponentCount() - 1);
-                        doNotNotifyScaffoldingManager = false;
-                    }
-                    visualizationTabs.setSelectedTab(tab);
-                }
-            }
-        }
-        if (!b && selectionMode) {
-            selectionMode = false;
-            if (stateClickListener != null) {
-                stateClickListener.clickedState(null);
-                stateClickListener = null;
-            }
-        }
-        if (!b && onboardingActive) {
-            scaffoldingManager.updateScaffolds(currentInstance, null);
-        }
-
-    }
-
-    private SliderPanel createHistorySlider() {
-        VisualizeModelEvolution historySliderContent = new VisualizeModelEvolution(currentProcess, processChangeHistory);
-        historySliderContent.setWidth((UI.getCurrent().getPage().getBrowserWindowWidth() - 150) + "px");
-        historySliderContent.setHeight((UI.getCurrent().getPage().getBrowserWindowHeight() - 150) + "px");
-        final SliderPanel historySlider =
-                new SliderPanelBuilder(historySliderContent, "Show history").mode(SliderMode.LEFT)
-                        .tabPosition(SliderTabPosition.MIDDLE).style(SliderPanelStyles.COLOR_WHITE).flowInContent(true).animationDuration(500).build();
-        historySlider.addListener(new HistoryListener(historySliderContent));
-        return historySlider;
-
-    }
-
-    private HorizontalLayout createToolbar() {
-        toolBar.removeAllComponents();
-
-        simulate = new Button("Auto-progress");
-        simulate.addClickListener(e -> {
-            LogHelper.logInfo("Simulator: " + currentProcess + ": auto-progress triggered");
-            selectionMode = true;
-            Iterator<Component> i = visualizationTabs.iterator();
-            String targetTab = new String("Interaktionen");
-            if (currentProcess.getSubjects().size() == 1)
-                targetTab = currentProcess.getSubjects().iterator().next().toString();
-            while (i.hasNext()) {
-                Component tab = i.next();
-                if (tab.getCaption().equals(targetTab)) {
-                    if (visualizationTabs.getSelectedTab() == tab) {
-                        if (targetTab.equals("Interaktionen")) visualizationTabs.setSelectedTab(0);
-                        else visualizationTabs.setSelectedTab(visualizationTabs.getComponentCount() - 1);
-                    }
-                    visualizationTabs.setSelectedTab(tab);
-                }
-            }
-            Notification.show("Please select where to progress to.", Notification.Type.WARNING_MESSAGE);
-            visualizationSlider.expand();
-        });
-
-        restart = new Button("Restart Process");
-        restart.addClickListener(e -> {
-            LogHelper.logInfo("Execution: " + currentProcess + ": process restarted");
-            // LogHelper.logDebug("starting restart");
-            mainLayoutFrame.removeAllComponents();
-            // LogHelper.logDebug("creating layout");
-//changed            createBasicLayout();
-            createGlobalLayout();
-            pagebody.removeAllComponents();
-            pagebody.addComponent(createPageBodyForProzesse_Execution()); //todo neu check
-            // LogHelper.logDebug("updating scaffolds for finished instance");
-            //scaffoldingManager.updateScaffolds(currentInstance);
-            // LogHelper.logDebug("creating new instance");
-            currentInstance = new Instance(currentProcess);
-            // LogHelper.logDebug("updating scaffolds for finished step after reset");
-            //scaffoldingManager.updateScaffolds(currentInstance,null);
-            // LogHelper.logDebug("resetting simulator");
-            simulator = new Simulator(currentInstance, subjectPanels, this);
-            // LogHelper.logDebug("updating UI");
-            updateUI();
-        });
-
-        elaborationHistory = new Button("Open Process Change History");
-        elaborationHistory.addClickListener(e -> {
-            LogHelper.logInfo("Elaboration: " + currentProcess + ": process change history opened");
-            HistoryUI historyUI = new HistoryUI(processChangeHistory);
-            this.getUI().addWindow(historyUI);
-            historyUI.addCloseListener(e1 -> {
-                rollbackChangesTo(historyUI.getSelectedTransaction());
-                if (historyUI.getSelectedTransaction() != null)
-                    LogHelper.logInfo("Elaboration: " + currentProcess + ": rolling back changes made through elaboration. Last undone transaction: " + historyUI.getSelectedTransaction());
-                else
-                    LogHelper.logInfo("Elaboration: " + currentProcess + ": process change history closed again without any changes");
-            });
-        });
-        if (processChangeHistory.getHistory().isEmpty()) {
-            elaborationHistory.setVisible(false);
-            historySlider.setVisible(false);
-        }
-
-//        if (!currentProcess.getSubjects().isEmpty()) toolBar.addComponent(simulate);
-        if (onboardingActive) simulate.setVisible(false);
-        toolBar.addComponent(restart);
-        toolBar.addComponent(differentProcess);
-        //       toolBar.addComponent(elaborationHistory);
-        toolBar.setSpacing(true);
-        return toolBar;
-
-    }
-
-    private void rollbackChangesTo(ProcessChangeTransaction rollbackTo) {
-        if (rollbackTo != null) {
-            for (ProcessChangeTransaction transaction : processChangeHistory.getHistory()) {
-                transaction.undo(currentProcess);
-                if (transaction == rollbackTo) break;
-            }
-            InstanceHistoryStep instanceState = rollbackTo.getAffectedInstanceHistoryState();
-            currentInstance.reconstructInstanceState(instanceState);
-            processChangeHistory.removeUntil(rollbackTo);
-            //changed            createBasicLayout();
-            createGlobalLayout();
-            pagebody.removeAllComponents();
-            pagebody.addComponent(createPageBodyForProzesse_Execution()); //todo neu check
-            updateUI();
-        }
-    }
-
-    public void notifyAboutClickedState(StateClickListener listener) {
-        stateClickListener = listener;
-    }
-
-    public void informAboutSelectedNode(String vizName, String name) {
-        if (!selectionMode) return;
-
-        if (vizName.equals("Interaktionen")) {
-            Iterator<Component> i = visualizationTabs.iterator();
-            Subject selectedSubject = currentProcess.getSubjectByUUID(UUID.fromString(name));
-            while (i.hasNext()) {
-                Component tab = i.next();
-                if (tab.getCaption().equals(selectedSubject.toString())) {
-                    visualizationTabs.setSelectedTab(tab);
-                    return;
-                }
-            }
-
-        }
-
-        State selectedState = currentProcess.getStateByUUID(UUID.fromString(name));
-        if (selectedState == null) return;
-
-        selectionMode = false;
-        visualizationSlider.collapse();
-
-        if (stateClickListener == null) {
-            simulate(selectedState);
-        } else {
-            stateClickListener.clickedState(selectedState);
-            stateClickListener = null;
-        }
-    }
-
-    public void expandVisualizationSlider(Subject withSubject) {
-        selectionMode = true;
-        Iterator<Component> i = visualizationTabs.iterator();
-        while (i.hasNext()) {
-            Component tab = i.next();
-            if (tab.getCaption().equals(withSubject.toString())) {
-                doNotNotifyScaffoldingManager = true;
-                if (visualizationTabs.getSelectedTab() == tab) {
-                    visualizationTabs.setSelectedTab(visualizationTabs.getComponentCount() - 1);
-                }
-                visualizationTabs.setSelectedTab(tab);
-                doNotNotifyScaffoldingManager = false;
-            }
-        }
-        Notification.show("Please select the existing step you want to use.", Notification.Type.WARNING_MESSAGE);
-        visualizationSlider.expand();
     }
 
     private Component recalculateSubjectLayout(int availableWidth) {
@@ -1187,18 +916,18 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
                 LogHelper.logInfo("Download: " + currentProcess + ": Download Button clicked");
                 fileStorageHandler.openDownloadWindow(this.getUI());
             });
-            //changed         toolBar.addComponent(download);
+            //         toolBar.addComponent(download);
         }
 
         if (currentInstance.processFinished()) {
-            simulate.setVisible(false);
+//            simulate.setVisible(false);
             // LogHelper.logDebug("Process finished, offering to restart ...");
-            mainLayoutFrame.removeComponent(scaffoldingPanel);
-            scaffoldingPanel.setVisible(false);
+//            mainLayoutFrame.removeComponent(scaffoldingPanel);
+//            scaffoldingPanel.setVisible(false);
             if (currentInstance.getProcess().getSubjects().size() > 0) {
                 restart.setVisible(true);
-                if (currentInstance.isProcessHasBeenChanged()) {
-                    if (fileStorageHandler == null) fileStorageHandler = new FileStorageHandler();
+                //            if (currentInstance.isProcessHasBeenChanged()) {
+                //              if (fileStorageHandler == null) fileStorageHandler = new FileStorageHandler();
                    /* if (!fileStorageHandler.isIDCookieAvailable()) {
                         GroupIDEntryWindow groupIDEntryWindow = new GroupIDEntryWindow(fileStorageHandler);
                         this.getUI().addWindow(groupIDEntryWindow);
@@ -1210,13 +939,13 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
                         fileStorageHandler.addProcessToStorageBuffer(currentInstance.getProcess());
                         fileStorageHandler.saveToServer();
                     }*/
-                }
+                //}
                 Button download = new Button("Download");
                 download.addClickListener(e -> {
                     fileStorageHandler.openDownloadWindow(this.getUI());
                     LogHelper.logInfo("Download: " + currentProcess + ": Download Button clicked");
                 });
-                //changed           toolBar.addComponent(download);
+                //           toolBar.addComponent(download);
             }
             differentProcess.setVisible(true);
         }
@@ -1352,6 +1081,317 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
 //        if (elaborationAvailable && currentInstance.subjectFinished(s) && s.getFirstState() != null) panelContent.addComponent(addAdditionStep);
     }
 
+    public void changeToNewProcess(Process newProcess) {
+        LogHelper.logInfo("Execution: " + newProcess + ": New process loaded (former process: " + currentProcess + ")");
+        if (newProcess != null) {
+            currentProcess = newProcess;
+            initialStartup = true;
+//            processChangeHistory = processSelectorUI.getProcessChangeHistory();
+            currentInstance = new Instance(currentProcess);
+//            createBasicLayout();
+            createGlobalLayout();
+            pagebody.removeAllComponents();
+            pagebody.addComponent(createPageBodyForProzesse_Execution()); //todo neu check
+            simulator = new Simulator(currentInstance, subjectPanels, CoMPArEUI.this);
+            if (fileStorageHandler == null) fileStorageHandler = new FileStorageHandler();
+            fileStorageHandler.newProcessStarted();
+            updateUI();
+        }
+    }
+
+    @Override
+    public void onToggle(boolean b) {
+        if (b && !selectionMode) {
+
+            String toBeActivated = null;
+            Set<Subject> candidates = new HashSet<>();
+            for (Subject s : subjectPanels.keySet()) {
+                if (currentInstance.subjectCanProgress(s)) candidates.add(s);
+            }
+            if (candidates.size() == 0) toBeActivated = "Interaktionen";
+            else if (candidates.size() == 1) toBeActivated = candidates.iterator().next().toString();
+            else if (candidates.contains(lastActiveSubject)) toBeActivated = lastActiveSubject.toString();
+            else toBeActivated = candidates.iterator().next().toString();
+
+            Iterator<Component> i = visualizationTabs.iterator();
+            while (i.hasNext()) {
+                Component tab = i.next();
+                if (tab.getCaption().equals(toBeActivated)) {
+                    if (visualizationTabs.getSelectedTab() == tab) {
+                        doNotNotifyScaffoldingManager = true;
+                        visualizationTabs.setSelectedTab(visualizationTabs.getComponentCount() - 1);
+                        doNotNotifyScaffoldingManager = false;
+                    }
+                    visualizationTabs.setSelectedTab(tab);
+                }
+            }
+        }
+        if (!b && selectionMode) {
+            selectionMode = false;
+            if (stateClickListener != null) {
+                stateClickListener.clickedState(null);
+                stateClickListener = null;
+            }
+        }
+        if (!b && onboardingActive) {
+            scaffoldingManager.updateScaffolds(currentInstance, null);
+        }
+
+    }
+
+    @WebServlet(urlPatterns = "/*", name = "CoMPArEServlet", asyncSupported = true)
+    @VaadinServletConfiguration(ui = CoMPArEUI.class, productionMode = false, widgetset = "at.jku.ce.CoMPArE.CoMPArEWidgetSet")
+    public static class CoMPArEServlet extends VaadinServlet {
+
+        private final static String resultFolderKey = "at.jku.ce.CoMPAreE.resultfolder";
+        private static String resultFolderName = null;
+
+        public static String getResultFolderName() {
+            return resultFolderName;
+        }
+
+        protected void servletInitialized() throws ServletException {
+            super.servletInitialized();
+
+            // Get the result folder as defined in WEB-INF/web.xml
+            resultFolderName = getServletConfig().getServletContext().getInitParameter(resultFolderKey);
+
+            File fRf = new File(resultFolderName);
+            boolean isWorking = fRf.exists() && fRf.isDirectory()
+                    || fRf.mkdirs();
+            if (!isWorking) {
+                resultFolderName = null;
+            }
+        }
+
+
+    }
+
+    private void createBasicLayout() {
+
+//        LogHelper.logDebug("Building basic layout");
+        mainLayoutFrame = new HorizontalLayout();
+
+//        SliderPanel scaffoldingSlider = createScaffoldingSlider(process, instance);
+//        visualizationSlider = createVisualizationSlider();
+//        historySlider = createHistorySlider();
+
+        mainInteractionArea = new VerticalLayout();
+
+        HorizontalLayout toolBar = createToolbar();
+        Component subjects = createSubjectLayout((int) (this.getPage().getBrowserWindowWidth() * (splitPanel.getSplitPosition() / 100)));
+
+        HorizontalLayout hPadding = new HorizontalLayout();
+        hPadding.setHeight("1px");
+        hPadding.setWidth((this.getPage().getBrowserWindowWidth() - 150) + "px");
+        mainInteractionArea.addComponent(hPadding);
+        mainInteractionArea.addComponent(subjects);
+        mainInteractionArea.addComponent(toolBar);
+        createTabSheet();
+        mainInteractionArea.addComponent(visualizationTabs);
+//        mainInteractionArea.addComponent(scaffoldingPanel);
+        if (onboardingActive) scaffoldingPanel.setVisible(false);
+        //       mainInteractionArea.setMargin(true);
+        //      mainInteractionArea.setSpacing(true);
+
+
+        VerticalLayout vPadding = new VerticalLayout();
+        vPadding.setWidth("50px");
+        vPadding.setHeight(this.getPage().getBrowserWindowHeight() + "px");
+
+
+//        mainLayoutFrame.addComponent(scaffoldingSlider);
+//        mainLayoutFrame.addComponent(visualizationSlider);
+        mainLayoutFrame.addComponent(historySlider);
+//        if (onboardingActive) visualizationSlider.setVisible(false);
+//        mainLayoutFrame.addComponent(vPadding);
+        mainLayoutFrame.addComponent(mainInteractionArea);
+
+        this.setContent(mainLayoutFrame);
+
+    }
+
+    private SliderPanel createScaffoldingSlider(Process process, Instance instance) {
+        return new SliderPanelBuilder(scaffoldingPanel, "What to consider").mode(SliderMode.LEFT)
+                .tabPosition(SliderTabPosition.BEGINNING).style(SliderPanelStyles.COLOR_WHITE).flowInContent(true).animationDuration(500).build();
+
+    }
+
+    private SliderPanel createVisualizationSlider() {
+        VerticalLayout visualizationSliderContent = new VerticalLayout();
+        visualizationSliderContent.removeAllComponents();
+        visualizationSliderContent.setWidth((this.getPage().getBrowserWindowWidth() - 150) + "px");
+        visualizationSliderContent.setHeight((this.getPage().getBrowserWindowHeight() - 150) + "px");
+        visualizationSliderContent.setMargin(true);
+        visualizationSliderContent.setSpacing(true);
+
+        createTabSheet();
+        visualizationSliderContent.addComponent(visualizationTabs);
+
+        final SliderPanel visualizationSlider =
+                new SliderPanelBuilder(visualizationSliderContent, "Show behaviour").mode(SliderMode.LEFT)
+                        .tabPosition(SliderTabPosition.BEGINNING).style(SliderPanelStyles.COLOR_WHITE).flowInContent(true).animationDuration(500).build();
+
+        visualizationSlider.addListener(this);
+        return visualizationSlider;
+    }
+
+    private SliderPanel createHistorySlider() {
+        VisualizeModelEvolution historySliderContent = new VisualizeModelEvolution(currentProcess, processChangeHistory);
+        historySliderContent.setWidth((UI.getCurrent().getPage().getBrowserWindowWidth() - 150) + "px");
+        historySliderContent.setHeight((UI.getCurrent().getPage().getBrowserWindowHeight() - 150) + "px");
+        final SliderPanel historySlider =
+                new SliderPanelBuilder(historySliderContent, "Show history").mode(SliderMode.LEFT)
+                        .tabPosition(SliderTabPosition.MIDDLE).style(SliderPanelStyles.COLOR_WHITE).flowInContent(true).animationDuration(500).build();
+        historySlider.addListener(new HistoryListener(historySliderContent));
+        return historySlider;
+
+    }
+
+    private HorizontalLayout createToolbar() {
+        toolBar.removeAllComponents();
+
+        simulate = new Button("Auto-progress");
+        simulate.addClickListener(e -> {
+            LogHelper.logInfo("Simulator: " + currentProcess + ": auto-progress triggered");
+            selectionMode = true;
+            Iterator<Component> i = visualizationTabs.iterator();
+            String targetTab = new String("Interaktionen");
+            if (currentProcess.getSubjects().size() == 1)
+                targetTab = currentProcess.getSubjects().iterator().next().toString();
+            while (i.hasNext()) {
+                Component tab = i.next();
+                if (tab.getCaption().equals(targetTab)) {
+                    if (visualizationTabs.getSelectedTab() == tab) {
+                        if (targetTab.equals("Interaktionen")) visualizationTabs.setSelectedTab(0);
+                        else visualizationTabs.setSelectedTab(visualizationTabs.getComponentCount() - 1);
+                    }
+                    visualizationTabs.setSelectedTab(tab);
+                }
+            }
+            Notification.show("Please select where to progress to.", Notification.Type.WARNING_MESSAGE);
+            visualizationSlider.expand();
+        });
+
+        restart = new Button("Restart Process");
+        restart.addClickListener(e -> {
+            LogHelper.logInfo("Execution: " + currentProcess + ": process restarted");
+            // LogHelper.logDebug("starting restart");
+            mainLayoutFrame.removeAllComponents();
+            // LogHelper.logDebug("creating layout");
+//            createBasicLayout();
+            createGlobalLayout();
+            pagebody.removeAllComponents();
+            pagebody.addComponent(createPageBodyForProzesse_Execution()); //todo neu check
+            // LogHelper.logDebug("updating scaffolds for finished instance");
+            //scaffoldingManager.updateScaffolds(currentInstance);
+            // LogHelper.logDebug("creating new instance");
+            currentInstance = new Instance(currentProcess);
+            // LogHelper.logDebug("updating scaffolds for finished step after reset");
+            //scaffoldingManager.updateScaffolds(currentInstance,null);
+            // LogHelper.logDebug("resetting simulator");
+            simulator = new Simulator(currentInstance, subjectPanels, this);
+            // LogHelper.logDebug("updating UI");
+            updateUI();
+        });
+
+        elaborationHistory = new Button("Open Process Change History");
+        elaborationHistory.addClickListener(e -> {
+            LogHelper.logInfo("Elaboration: " + currentProcess + ": process change history opened");
+            HistoryUI historyUI = new HistoryUI(processChangeHistory);
+            this.getUI().addWindow(historyUI);
+            historyUI.addCloseListener(e1 -> {
+                rollbackChangesTo(historyUI.getSelectedTransaction());
+                if (historyUI.getSelectedTransaction() != null)
+                    LogHelper.logInfo("Elaboration: " + currentProcess + ": rolling back changes made through elaboration. Last undone transaction: " + historyUI.getSelectedTransaction());
+                else
+                    LogHelper.logInfo("Elaboration: " + currentProcess + ": process change history closed again without any changes");
+            });
+        });
+        if (processChangeHistory.getHistory().isEmpty()) {
+            elaborationHistory.setVisible(false);
+            historySlider.setVisible(false);
+        }
+
+//        if (!currentProcess.getSubjects().isEmpty()) toolBar.addComponent(simulate);
+        if (onboardingActive) simulate.setVisible(false);
+        toolBar.addComponent(restart);
+        toolBar.addComponent(differentProcess);
+        //       toolBar.addComponent(elaborationHistory);
+        toolBar.setSpacing(true);
+        return toolBar;
+
+    }
+
+    private void rollbackChangesTo(ProcessChangeTransaction rollbackTo) {
+        if (rollbackTo != null) {
+            for (ProcessChangeTransaction transaction : processChangeHistory.getHistory()) {
+                transaction.undo(currentProcess);
+                if (transaction == rollbackTo) break;
+            }
+            InstanceHistoryStep instanceState = rollbackTo.getAffectedInstanceHistoryState();
+            currentInstance.reconstructInstanceState(instanceState);
+            processChangeHistory.removeUntil(rollbackTo);
+            //            createBasicLayout();
+            createGlobalLayout();
+            pagebody.removeAllComponents();
+            pagebody.addComponent(createPageBodyForProzesse_Execution()); //todo neu check
+            updateUI();
+        }
+    }
+
+    public void notifyAboutClickedState(StateClickListener listener) {
+        stateClickListener = listener;
+    }
+
+    public void informAboutSelectedNode(String vizName, String name) {
+        if (!selectionMode) return;
+
+        if (vizName.equals("Interaktionen")) {
+            Iterator<Component> i = visualizationTabs.iterator();
+            Subject selectedSubject = currentProcess.getSubjectByUUID(UUID.fromString(name));
+            while (i.hasNext()) {
+                Component tab = i.next();
+                if (tab.getCaption().equals(selectedSubject.toString())) {
+                    visualizationTabs.setSelectedTab(tab);
+                    return;
+                }
+            }
+
+        }
+
+        State selectedState = currentProcess.getStateByUUID(UUID.fromString(name));
+        if (selectedState == null) return;
+
+        selectionMode = false;
+        visualizationSlider.collapse();
+
+        if (stateClickListener == null) {
+            simulate(selectedState);
+        } else {
+            stateClickListener.clickedState(selectedState);
+            stateClickListener = null;
+        }
+    }
+
+    public void expandVisualizationSlider(Subject withSubject) {
+        selectionMode = true;
+        Iterator<Component> i = visualizationTabs.iterator();
+        while (i.hasNext()) {
+            Component tab = i.next();
+            if (tab.getCaption().equals(withSubject.toString())) {
+                doNotNotifyScaffoldingManager = true;
+                if (visualizationTabs.getSelectedTab() == tab) {
+                    visualizationTabs.setSelectedTab(visualizationTabs.getComponentCount() - 1);
+                }
+                visualizationTabs.setSelectedTab(tab);
+                doNotNotifyScaffoldingManager = false;
+            }
+        }
+        Notification.show("Please select the existing step you want to use.", Notification.Type.WARNING_MESSAGE);
+        visualizationSlider.expand();
+    }
+
     private void openElaborationOverlay(Subject s, int mode) {
         elaborationActive = true;
         ElaborationUI elaborationUI = new ElaborationUI(processChangeHistory);
@@ -1371,7 +1411,7 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
                     elaborationHistory.setVisible(true);
                     historySlider.setVisible(true);
                 }
-//changed            createBasicLayout();
+//            createBasicLayout();
                 createGlobalLayout();
                 pagebody.removeAllComponents();
                 pagebody.addComponent(createPageBodyForProzesse_Execution()); //todo neu check
@@ -1390,7 +1430,7 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         ProcessSelectorUI processSelectorUI = new ProcessSelectorUI();
         getUI().addWindow(processSelectorUI);
         processSelectorUI.showDemoProcessSelector();
-// changed       processSelectorUI.showProcessSelector();
+//        processSelectorUI.showProcessSelector();
         processSelectorUI.addCloseListener(new Window.CloseListener() {
             @Override
             public void windowClose(Window.CloseEvent e) {
@@ -1404,24 +1444,6 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
             }
         });
 
-    }
-
-    public void changeToNewProcess(Process newProcess) {
-        LogHelper.logInfo("Execution: " + newProcess + ": New process loaded (former process: " + currentProcess + ")");
-        if (newProcess != null) {
-            currentProcess = newProcess;
-            initialStartup = true;
-//changed            processChangeHistory = processSelectorUI.getProcessChangeHistory();
-            currentInstance = new Instance(currentProcess);
-//changed            createBasicLayout();
-            createGlobalLayout();
-            pagebody.removeAllComponents();
-            pagebody.addComponent(createPageBodyForProzesse_Execution()); //todo neu check
-            simulator = new Simulator(currentInstance, subjectPanels, CoMPArEUI.this);
-            if (fileStorageHandler == null) fileStorageHandler = new FileStorageHandler();
-            fileStorageHandler.newProcessStarted();
-            updateUI();
-        }
     }
 
     public ProcessChangeHistory getProcessChangeHistory() {
@@ -1488,34 +1510,6 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
 
     public Subject getLastActiveSubject() {
         return lastActiveSubject;
-    }
-
-    @WebServlet(urlPatterns = "/*", name = "CoMPArEServlet", asyncSupported = true)
-    @VaadinServletConfiguration(ui = CoMPArEUI.class, productionMode = false, widgetset = "at.jku.ce.CoMPArE.CoMPArEWidgetSet")
-    public static class CoMPArEServlet extends VaadinServlet {
-
-        private final static String resultFolderKey = "at.jku.ce.CoMPAreE.resultfolder";
-        private static String resultFolderName = null;
-
-        public static String getResultFolderName() {
-            return resultFolderName;
-        }
-
-        protected void servletInitialized() throws ServletException {
-            super.servletInitialized();
-
-            // Get the result folder as defined in WEB-INF/web.xml
-            resultFolderName = getServletConfig().getServletContext().getInitParameter(resultFolderKey);
-
-            File fRf = new File(resultFolderName);
-            boolean isWorking = fRf.exists() && fRf.isDirectory()
-                    || fRf.mkdirs();
-            if (!isWorking) {
-                resultFolderName = null;
-            }
-        }
-
-
     }
 
     public class HistoryListener implements SliderPanelListener {
