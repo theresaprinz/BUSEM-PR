@@ -13,6 +13,7 @@ import at.jku.ce.CoMPArE.visualize.VisualizeModelEvolution;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.event.ContextClickEvent;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.*;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -45,6 +46,7 @@ import java.util.*;
 public class CoMPArEUI extends UI implements SliderPanelListener {
     Navigator navigator;
     private VerticalLayout pagebody;
+
     private MenuBar menuebar;
     private Map<Subject, Panel> subjectPanels;
     private Panel scaffoldingPanel;
@@ -58,6 +60,7 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
     private SliderPanel visualizationSlider;
     private SliderPanel historySlider;
     private VisualizeModel visualizeModel;
+    private Button datenschutz, impressum;
 
     private Process currentProcess;
     private Instance currentInstance;
@@ -122,7 +125,7 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
 
 //        createBasicLayout();
         createGlobalLayout();
-        pagebody.addComponent(createPageBodyForThemenfeld());
+        pagebody.addComponent(createPageBodyForUebersicht());
 
         simulator = new Simulator(currentInstance, subjectPanels, this);
 //        scaffoldingManager = new ScaffoldingManager(currentProcess,scaffoldingPanel);
@@ -182,21 +185,42 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         pagebody.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         rootLayout.addComponent(pagebody);
 
+        rootLayout.addComponent(new Label( "<hr/>", ContentMode.HTML));
+
+        //Pagefooter
+        HorizontalLayout pagefooter = new HorizontalLayout();
+        pagefooter.setSpacing(true);
+        rootLayout.addComponent(pagefooter);
+
+        impressum = new Button("Impressum");
+        datenschutz = new Button("Datenschutz");
+        impressum.addClickListener((Button.ClickListener) event -> {
+            pagebody.removeAllComponents();
+            pagebody.addComponent(createPageBodyForImpressum());
+        });
+        datenschutz.addClickListener((Button.ClickListener) event -> {
+            pagebody.removeAllComponents();
+            pagebody.addComponent(createPageBodyForDatenschutz());
+        });
+        pagefooter.addComponent(impressum);
+        pagefooter.addComponent(datenschutz);
+
+
         //Menü
         menuebar = new MenuBar();
         menuebar.setWidth("100%");
         menuebar.setHeight("40px");
 
-        menuebar.addItem("Themenfeld", e -> {
+        menuebar.addItem("Übersicht", e -> {
             pagebody.removeAllComponents();
-            pagebody.addComponent(createPageBodyForThemenfeld());
+            pagebody.addComponent(createPageBodyForUebersicht());
         });
-        menuebar.addItem("Analytische Betrachtung", e -> {
+        menuebar.addItem("Common", e -> {
             pagebody.removeAllComponents();
             pagebody.addComponent(createPageBodyForAnalytischeBetrachtung());
         });
         menuebar.addItem("Prozesse", null);
-        menuebar.addItem("Schlussfolgerung", e -> {
+        menuebar.addItem("Zusammenfassung", e -> {
             pagebody.removeAllComponents();
             pagebody.addComponent(createPageBodyForSchlussfolgerung());
         });
@@ -223,15 +247,20 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         this.setContent(rootLayout);
     }
 
-    private Component createPageBodyForThemenfeld() {
+    private Component createPageBodyForUebersicht() {
         VerticalLayout content = new VerticalLayout();
         content.setWidth("100%");
 
-        Label text1 = new Label(
-                " <p><b>“Selbstorganisiert wohnen, solidarisch wirtschaften”</b></p>" +
-                        "<p>So lautet das Motto vom Mietshäuser Syndikat. Schon seit über 20 Jahren sorgt das Unternehmen " +
+        Label textWillkommen = new Label("<p><b>Herzlich willkommen!</b></p>" +
+                "<p>Wir haben für Sie die wichtigsten Punkte über Commoning im Allgemeinen und unser Common „Housing“ zusammengefasst " +
+                "und aufbereitet. Lernen Sie nicht nur theoretische Inhalte, sondern durchlaufen Sie selbst die Prozesse " +
+                "und verstehen Sie wie sich die traditionelle von der Commoning Welt unterscheidet und wie sich die Welten vereinen lassen. </p>", ContentMode.HTML);
+        content.addComponent(textWillkommen);
+
+        Label textCommonGood = new Label(
+                "<p>“Selbstorganisiert wohnen, solidarisch wirtschaften” - So lautet das Motto vom Mietshäuser Syndikat. Schon seit über 20 Jahren sorgt das Unternehmen " +
                         "für Gemeineigentum an Haus und Grund, bezahlbaren Wohnraum für Menschen mit wenig Geld, " +
-                        "Raum für Gruppen, politische Initiativen und das alles in Selbstorganisation [1]. </p>" +
+                        "Raum für Gruppen, politische Initiativen und das alles in Selbstorganisation. </p>" +
                         "<p>Beim Commoning geht es in erster Linie um das Gemeinwohl d.h. dem Menschen im sozialen Gefüge. " +
                         "Geht es nach Herrn Manfred Blachfellner (Economy Coordinator for the Common Good Tyrol, " +
                         "Member of the Common Good Matrix Development-Team), lässt sich das Common Good in vier " +
@@ -244,20 +273,20 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
                         "</ul> " +
                         "<p>Diese vier Bereiche beschreiben den Gedanken des Commoning und das Fallbeispiel, dass wir " +
                         "gewählt haben – das Mietshäuser Syndikat – sehr gut.</p>", ContentMode.HTML);
-        content.addComponent(text1);
+        content.addComponent(textCommonGood);
 
-        HorizontalLayout text2Layout = new HorizontalLayout();
-        text2Layout.setWidth("100%");
-        text2Layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        content.addComponent(text2Layout);
+        HorizontalLayout textSyndikatLayout = new HorizontalLayout();
+        textSyndikatLayout.setWidth("100%");
+        textSyndikatLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        content.addComponent(textSyndikatLayout);
 
         String basepath = VaadinService.getCurrent()
                 .getBaseDirectory().getAbsolutePath();
         FileResource resource1 = new FileResource(new File(basepath + "/images/Uebersicht.png"));
-        Image image1 = new Image("Abbildung 1 HAUSBESITZ GMBH ALS BINDEGLIED", resource1);
-        image1.setWidth("100%");
+        Image image1 = new Image("HAUSBESITZ GMBH ALS BINDEGLIED", resource1);
+        image1.setWidth("80%");
 
-        Label text2 = new Label("<p>Das Mietshäuser Syndikat:</p>" +
+        Label textSyndikat = new Label("<p>Das Mietshäuser Syndikat:</p>" +
                 "<ul>" +
                 "  <li>berät selbstorganisierte Hausprojekte, die sich für das Syndikatsmodell interessieren,</li>" +
                 "  <li>beteiligt sich an Projekten, damit diese dem Immobilienmarkt entzogen werden,</li>" +
@@ -266,52 +295,22 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
                 "</ul> " +
                 "<p>Was so einfach klingt bedingt einer besonderen Beteiligungsstruktur die zwischen " +
                 "Hausprojekten und Syndikatsverbund notwendig ist, um die Immobilie in Richtung " +
-                "„Entprivatisierung“ zu lenken [1].</p>" +
-                "<p>Abbildung 1 zeigt einen Überblick über diese Struktur. Die Hausbesitz GmbH agiert als " +
+                "„Entprivatisierung“ zu lenken.</p>" +
+                "<p>Die Abbildung zeigt einen Überblick über diese Struktur. Die Hausbesitz GmbH agiert als " +
                 "Bindeglied zwischen Hausverein und Mietshäuser Syndikat. Sie besteht aus zwei Gesellschaftern," +
                 " die das gleiche Stimmrecht haben, wodurch keiner der beiden überstimmt werden kann. D.h. die " +
                 "Immobilie kann nur verkauft werden, sofern sich beide Parteien explizit darauf einigen, " +
-                "wodurch ein Verkauf durch eine der Parteien unmöglich wird [1].</p>", ContentMode.HTML);
-        text2Layout.addComponent(text2);
-        text2Layout.addComponent(image1);
+                "wodurch ein Verkauf durch eine der Parteien unmöglich wird.</p>", ContentMode.HTML);
+        textSyndikatLayout.addComponent(textSyndikat);
+        textSyndikatLayout.addComponent(image1);
 
-        Label text3 = new Label(
-                "<p>Das Mietshäuser Syndikat fungiert als eine Art Kontrollorgan und dies nicht nur bei einem " +
-                        "Hausprojekt, sondern bei allen Hausprojekten. Dadurch bildet das Syndikat die zentrale " +
-                        "Schnittstelle im Netzwerk der Projekte. Durch die Erfahrungen aus bestehenden Hausprojekten " +
-                        "und das große Netzwerk können neue Projekte durch Beratungsgespräche unterstützt werden [1].</p>" +
-                        "<p>Um den Kauf von Immobilien als Gemeineigentum zu ermöglichen und den Wohnraum bezahlbar zu " +
-                        "halten, besteht eine besondere Finanzierungsform. Die Immobilien werden in der Regel durch " +
-                        "Direkt- und Bankkredite, zu fast gleichen Teilen, und einem geringeren Anteil an Eigenkapital " +
-                        "finanziert. Die Rückzahlung der Kredite erfolgt durch die Einnahmen aus der Miete. D.h. hier " +
-                        "können Personen, die diese Systeme unterstützen möchten, mit Direktkrediten helfen, solche " +
-                        "Projekte umzusetzen [1].</p>", ContentMode.HTML);
-        content.addComponent(text3);
+        HorizontalLayout textZusammenfassungLayout = new HorizontalLayout();
+        textZusammenfassungLayout.setWidth("100%");
+        textZusammenfassungLayout.setSpacing(true);
+        textZusammenfassungLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        content.addComponent(textZusammenfassungLayout);
 
-        HorizontalLayout text4Layout = new HorizontalLayout();
-        text4Layout.setWidth("100%");
-        text4Layout.setSpacing(true);
-        text4Layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        content.addComponent(text4Layout);
-
-        FileResource resource2 = new FileResource(new File(basepath + "/images/Finanzierung.png"));
-        Image image2 = new Image("ABBILDUNG 2 – KOSTENVERTEILUNG [1]", resource2);
-        image2.setWidth("80%");
-
-        Label text4 = new Label(
-                "<p>Wie in Abbildung 2 ersichtlich, wird zu Beginn der Mietlaufzeit ein größerer Anteil an " +
-                        "Kapitalkosten und ein kleinerer Anteil an Solidarbeitrag bezahlt. Der Solidarbeitrag, ist " +
-                        "ein Betrag, der an das Mietshäuser Syndikat bezahlt wird, die diese Beträge wiederum wieder " +
-                        "für Finanzierungen von Hausprojekten verwenden. Im Laufe der Jahre werden die Kapitalkosten " +
-                        "geringer und der Solidaranteil steigt. Neben den Kapitalkosten und Solidarbeitrag werden durch" +
-                        " die Miete auch Bewirtschaftungskosten eingehoben. Diese werden für Sanierungen und " +
-                        "Instandsetzungen am Objekt herangezogen [1].</p>"
-                , ContentMode.HTML);
-        text4Layout.addComponent(image2);
-        text4Layout.addComponent(text4);
-
-
-        Label text5 = new Label(
+        Label textZusammenfassung = new Label(
                 "<p>Fasst man das Mietshäuser Syndikat nochmal zusammen, lässt sich das Ziel wie folgt beschreiben: </p>" +
                         "<ul>" +
                         "<li>Eine Gruppe tatendurstiger Menschen nimmt Häuser ins Visier in denn sie zusammenwohnen " +
@@ -321,21 +320,13 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
                         "Hausbesitzers, sondern entwickeln eine Vision: Die Übernahme „ihres Hauses“ in Selbstorganisation. </li>" +
                         "</ul> ",
                 ContentMode.HTML);
-        text5.setWidth("100%");
-        content.addComponent(text5);
-
-        content.addComponent(new Label("</br><p>[1] Marilyn Lürtzing; Lothar Mühlbacher; Anita Selz, Das Mietshäuser Syndikat und die Hausprojekte. 2016.</p>", ContentMode.HTML));
+        textZusammenfassung.setWidth("100%");
+        content.addComponent(textZusammenfassung);
         return content;
     }
 
     private Component createPageBodyForAnalytischeBetrachtung() {
         VerticalLayout content = new VerticalLayout();
-        Label text1 = new Label(
-                "<p>Wir haben versucht mit unserem Fallbeispiel des Mietshaus Syndikates ein Bild zu zeichnen, " +
-                        "um ein besseres Verständnis vermitteln zu können. Wie bereits eingangs erörtert, geht es " +
-                        "beim Commoning um das Allgemeinwohl. Dieses setzt sich aus Humanität, Solidarität, " +
-                        "Nachhaltigkeit und Transparenz zusammen. </p>", ContentMode.HTML);
-        content.addComponent(text1);
 
         HorizontalLayout text2Layout = new HorizontalLayout();
         text2Layout.setWidth("100%");
@@ -345,14 +336,11 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
 
         String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
         FileResource resource1 = new FileResource(new File(basepath + "/images/commoning.png"));
-        Image image1 = new Image("ABBILDUNG 1 COMMON", resource1);
+        Image image1 = new Image("DAS COMMON UND SEINE BESTANDTEILE", resource1);
         image1.setWidth("80%");
 
         Label text2 = new Label(
-                "<p>Abbildung 1 zeigt, dass das „Common“ unseres Fallbeispiels aus drei Bereichen besteht und " +
-                        "zwar den Commoners, dem Commoning und der Common-Pool-Ressource.</p>" +
-                        "<p>" +
-                        "<b>Commoners:</b> <BLOCKQUOTE>Hausverein, Hausbesitz GmbH, Mietshäuser Syndikat GmbH </BLOCKQUOTE>" +
+              "<p><b>Commoners:</b> <BLOCKQUOTE>Hausverein, Hausbesitz GmbH, Mietshäuser Syndikat GmbH, Immobilienanbieter, Mieter</BLOCKQUOTE>" +
                         "<b>Commoning:</b> <BLOCKQUOTE>Erwerb einer Immobilie, Verwaltung der Immobilie </BLOCKQUOTE> " +
                         "<b>Common-Pool-Ressource:</b> " +
                         "<ul>" +
@@ -362,18 +350,6 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         text2Layout.addComponent(image1);
         text2Layout.addComponent(text2);
 
-        Label text3 = new Label(
-                "<p>Es wird verdeutlicht, dass eine einzelne Person nicht alleine den Erwerb der Immobilie " +
-                        "bewerkstelligen muss, sondern dies in der Gemeinschaft geschieht. Die beteiligten Personen " +
-                        "schließen sich zu einem Verein zusammen und werden vom Syndikat mit allen notwendigen " +
-                        "Informationen versorgt, die diese benötigen, um die Immobilie zu erwerben und zu verwalten. " +
-                        "Dabei stellt das Commoning den sozialen Prozess dar. Hier kommen auch die Prozessmodelle zur " +
-                        "Anwendung. Die Common-Pool Ressource besteht aus zwei Teilen. Dem physisch materiellen – in " +
-                        "unserem Fallbeispiel – der Immobilie, die erworben und bewohnt wird und einem nicht-physischen " +
-                        "Teil, der das Wissen zur Abwicklung beinhaltet. All diese Schritte werden in der Gemeinschaft " +
-                        "entschieden und durchgeführt. </p>",
-                ContentMode.HTML);
-        content.addComponent(text3);
         return content;
     }
 
@@ -385,8 +361,9 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         processlabel.addStyleName(ValoTheme.LABEL_H3);
         content.addComponent(processlabel);
 
-        Label text1 = new Label("<p>Zur Veranschaulichung wie der traditionelle Prozess aussieht, wurde der " +
-                "subjektorientierter Prozess in Abbildung 1 dargestellt. </p>", ContentMode.HTML);
+        Label text1 = new Label("<p>Die Idee war einen traditionellen Prozess eines Immobilienkaufs zur Vermietung " +
+                "darzustellen. Dabei agieren drei Rollen, die in unterschiedlichen Aktionen untereinander Nachrichten austauschen. " +
+                "Mittels subjektorientierten Modells zeigen wir in einer kurzen Übersicht von wem welche Nachrichten ausgetauscht werden. </p>", ContentMode.HTML);
         content.addComponent(text1);
 
         VerticalLayout text2Layout = new VerticalLayout();
@@ -396,45 +373,10 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
 
         String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
         FileResource resource1 = new FileResource(new File(basepath + "/images/Domain SID.png"));
-        Image image1 = new Image("ABBILDUNG 1 TRADITIONELLES PROZESSMODELL – SUBJEKT-INTERAKTIONS-DIAGRAMM (SID) IN S-BPM", resource1);
+        Image image1 = new Image("TRADITIONELLES PROZESSMODELL – SUBJEKT-INTERAKTIONS-DIAGRAMM (SID) IN S-BPM", resource1);
         image1.setWidth("60%");
-
-        Label text2 = new Label("<p>Der Prozess startet bei der Wohnungsgenossenschaft, die ein Angebot für einen " +
-                "Immobilienkauf an den Immobilienanbieter sendet, welches der Immobilienanbieter annehmen oder ablehnen " +
-                "kann. Wird das Angebot angenommen, sendet die Wohnungsgenossenschaft einer wohnungssuchenden Person " +
-                "ein Wohnungsangebot, welches angenommen oder abgelehnt werden kann.</p>" +
-                "<p>Was dies im Detail bedeutet wird in Abbildung 2 überblicksmäßig gezeigt und nachfolgend erläutert.</p>", ContentMode.HTML);
-        content.addComponent(text2);
         content.addComponent(text2Layout);
         text2Layout.addComponent(image1);
-
-        VerticalLayout text3Layout = new VerticalLayout();
-        text3Layout.setWidth("100%");
-        text3Layout.setSpacing(true);
-        text3Layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-
-        FileResource resource2 = new FileResource(new File(basepath + "/images/DomainProzess.png"));
-        Image image2 = new Image("ABBILDUNG 2 - TRADITIONELLES PROZESSMODELL IN BPMN", resource2);
-        image2.setWidth("100%");
-        Label text3 = new Label("<p>Wie die einzelnen Rollen untereinander agieren, wird anhand von Abbildung 2 " +
-                "überblickmäßig dargestellt und nachfolgend im Detail erklärt:</p>", ContentMode.HTML);
-
-        text3Layout.addComponent(text3);
-        text3Layout.addComponent(image2);
-        content.addComponent(text3Layout);
-
-        Label text4 = new Label("<p>Der Prozess beginnt mit der Informationsbeschaffung zu einer bestimmten " +
-                "Immobilie, die erworben werden soll (siehe 2). Es folgt eine Entscheidung, ob die Immobilie " +
-                "gekauft werden soll oder nicht. Falls die Immobilie gekauft werden soll, wird ein Angebot entworfen, " +
-                "welches dem Immobilienanbieter gesendet wird.</p>" +
-                "<p>Dem Immobilienanbieter steht es frei das Angebot anzunehmen oder abzulehnen (siehe 1). </p>" +
-                "<p>Kann die Wohnungsgenossenschaft die Immobilie erwerben, wird dem potentiellen Mieter die freie " +
-                "Wohnung angeboten (siehe 3). </p>" +
-                "<p>Dieser kann die Wohnung besichtigen und entscheiden, ob er das Wohnungsangebot annimmt oder ablehnt (siehe 5).</p>" +
-                "<p>Es wird ein Mietvertrag zwischen Mieter und Wohnungsgenossenschaft geschlossen und die Wohnung " +
-                "wird im letzten Schritt an den Mieter übergeben (siehe 4 und 6).</p>", ContentMode.HTML);
-
-        content.addComponent(text4);
 
         return content;
     }
@@ -447,17 +389,8 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         processlabel.addStyleName(ValoTheme.LABEL_H3);
         content.addComponent(processlabel);
 
-        Label text1 = new Label("<p>Da die meisten Menschen sich mit dem Thema Haus und/oder Wohnung in Bezug auf " +
-                "Miete oder Eigentum bereits irgendwann auseinandergesetzt haben und wir die Welt der Common‘s mit der " +
-                "Welt der Prozesse verknüpfen wollten, wurden Ausschnitte aus der Realität, analog zum Fallbeispiel des " +
-                "Mietshäuser Syndikat, gewählt. D.h. es wurden nicht alle Arbeitsschritte modelliert, sondern nur jene, " +
-                "um den Commoning Prozess zu veranschaulichen. Damit diese vergleichbar gemacht werden konnten, wurden " +
-                "nur die wichtigsten Bestandteile des Prozesses als subjektorientiertes S-BPM und konventionelle " +
-                "Prozessmodell in BPMN modelliert. Um die Komplexität der Modelle zu verringern wurden bewusst einige " +
-                "Entscheidungsschritte nicht ausmodelliert, da diese zur Darstellung des Fallbeispiels nicht relevant sind.</p>" +
-                "<p>Wir weisen darauf hin, dass wir bezüglich der Finanzierung nur den groben Überblick modelliert und " +
-                "den Immobilienankauf verkürzt dargestellt haben. Die Prozessmodelle sind schemenhaft und entsprechen " +
-                "nur teilweise der Realität. </p>", ContentMode.HTML);
+        Label text1 = new Label("<p>Wie die Rollen des Commoning Prozesses untereinander agieren und " +
+                "kommunizieren wird als subjektorientiertes Modell gezeigt. </p>", ContentMode.HTML);
         content.addComponent(text1);
 
         VerticalLayout text2Layout = new VerticalLayout();
@@ -467,66 +400,10 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
 
         String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
         FileResource resource1 = new FileResource(new File(basepath + "/images/Commoning SID.png"));
-        Image image1 = new Image("ABBILDUNG 1 COMMONING PROZESSMODELL – SUBJEKT-INTERAKTIONS-DIAGRAMM (SID) IN S-BPM", resource1);
+        Image image1 = new Image("COMMONING PROZESSMODELL – SUBJEKT-INTERAKTIONS-DIAGRAMM (SID) IN S-BPM", resource1);
         image1.setWidth("80%");
-
-        Label text2 = new Label("<p>Zum besseren Verständnis haben wir in einem Subjekt-Interaktionsmodell alle " +
-                "beteiligten Rollen des Commoning Prozesses modelliert. Der Prozess beginnt, wie in Abbildung 1 " +
-                "dargestellt, beim Immobilienanbieter. Dieser stellt den Mietern das Angebot, die Immobilie in der diese " +
-                "derzeit wohnen, zu erwerben. Die Mieter entscheiden in der Gemeinschaft, also nicht einer für sich, das " +
-                "Angebot anzunehmen oder abzulehnen. Entscheiden sich die Mieter, die Immobilie zu erwerben, müssen " +
-                "diese einen Hausverein gründen und in weiterer Folge gemeinsam mit der „Mietshäuser Syndikat GmbH“ " +
-                "eine Hausbesitz GmbH gründen. </p>", ContentMode.HTML);
-        content.addComponent(text2);
         content.addComponent(text2Layout);
         text2Layout.addComponent(image1);
-
-        VerticalLayout text3Layout = new VerticalLayout();
-        text3Layout.setWidth("100%");
-        text3Layout.setSpacing(true);
-        text3Layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-
-        FileResource resource2 = new FileResource(new File(basepath + "/images/CommoningProzess.png"));
-        Image image2 = new Image("ABBILDUNG 2 - COMMONING PROZESSMODELL IN BPMN", resource2);
-        image2.setWidth("100%");
-        Label text3 = new Label("<p>Wie die einzelnen Rollen untereinander agieren, wird anhand von Abbildung 2 " +
-                "überblickmäßig dargestellt und nachfolgend im Detail erklärt:</p>", ContentMode.HTML);
-
-        text3Layout.addComponent(text3);
-        text3Layout.addComponent(image2);
-        content.addComponent(text3Layout);
-
-        Label text4 = new Label("<p>Wie beim Subjekt-Interaktion Diagramm bereits beschrieben, beginnt dieser " +
-                "Prozess mit einem Angebot vom Immobilienanbieter, der die bewohnte Immobilie den Bewohnern zum Kauf " +
-                "anbietet bzw. den Mietern mitteilt, dass das Objekt verkauft wird (siehe 1). </p>" +
-                "<p>Beim Commoning folgt nun eine gemeinschaftliche Entscheidung, ob die Mieter das Angebot annehmen " +
-                "oder ablehnen möchten. Entscheidet sich die Mietergemeinschaft das Angebot anzunehmen, wird dies dem " +
-                "Immobilienanbieter mitgeteilt und es werden alle relevanten Informationen gesammelt (siehe 3).</p>" +
-                "<p>Dabei kann das „Mietshäuser Syndikat“ behilflich sein, d.h. sie geben Auskunft wie die weitere " +
-                "Abwicklung des Kaufs zu erfolgen hat und beraten diese dabei. Hierzu ist jedoch eine Anmeldung beim " +
-                "Mietshaus Syndikat notwendig (siehe 7). </p>" +
-                "<p>Danach müssen die Mieter einen Hausverein gründen. Dies ist notwendig, um gemeinsam mit dem Mietshaus " +
-                "Syndikat eine Hausbesitz GmbH zu gründen. Dieser Schritt ist, wie bereits erwähnt, wichtig, damit die " +
-                "Immobilie nicht mehr veräußert werden kann, solange nicht beide Parteien darüber übereinstimmen und " +
-                "sämtliche Entscheidungen, die Immobilie betreffend, gemeinschaftlich getroffen werden. In der GmbH " +
-                "Satzung werden auch alle finanziellen Themen abgedeckt, wie beispielsweise die im Prozess dargestellten " +
-                "Rückzahlungen. Zu Beginn werden die Kredite an die Geldgeber beglichen, dem Syndikat wird ein " +
-                "Solidaritätsbeitrag geleistet und für die Immobilie Bewirtschaftungskosten angespart. </p>" +
-                "<p>Beim Hausverein beginnt der Prozess mit der Gründung (siehe 5). D.h. ab dem Zeitpunkt, " +
-                "wo dieser offiziell eingetragen ist, können die Mitglieder, also die Mieter, beginnen das Geld zu " +
-                "organisieren. </p>" +
-                "<p>Wie erwähnt hilft und berät dabei das Syndikat. Es können Eigenmittel eingebracht werden, welche " +
-                "aber in einem Commoning Prozess nur einen sehr geringen Anteil haben. Weiters können Direktkredite bei " +
-                "Personen gestellt werden, die das Mietshäuser Syndikat und seine Projekte unterstützen möchten oder " +
-                "es können ganz gewöhnliche Bankkredite aufgenommen werden). Wurde die Kaufsumme aufgebracht, werden " +
-                "die letzten Vertragsklauseln geklärt und festgelegt. Danach kommt es zur Gründung der Hausbesitz GmbH, " +
-                "gemeinsam mit dem Mietshäuser Syndikat (siehe 8 und 6). </p>" +
-                "<p>Wie in 6. ersichtlich, ist die Hausbesitz GmbH besonders für den Kaufabschluss notwendig. </p>" +
-                "<p>Ist der Kauf zwischen Hausbesitz GmbH und Immobilienanbieter (siehe 2) abgeschlossen, " +
-                "bedienen die Mieter die Kapitalkosten und einen Bewirtschaftungsbeitrag in Form einer Miete (siehe 4). " +
-                "</p><br>", ContentMode.HTML);
-
-        content.addComponent(text4);
 
         return content;
     }
@@ -538,16 +415,10 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         Label processlabel = new Label("Transformation");
         processlabel.addStyleName(ValoTheme.LABEL_H3);
 
-        Label text1 = new Label("<p>In diesem Abschnitt widmen wir uns neben der Gegenüberstellung der " +
-                "Transformation, d.h. wie der traditionelle Prozess mit dem Commoning Prozess verbunden werden kann.</p>" +
-                "<p>Was anfangs sehr einfach und überschaubar wirkt stellt sich, wenn man den traditionellen Prozess " +
-                "dem Commoning Prozess gegenüberstellt, als wesentlich umfangreicher heraus. Dies fällt schon " +
-                "hinsichtlich der beteiligten Personen auf, da ein Immobilienanbieter, die Mieter, der Hausverein, " +
-                "eine Hausbesitz GmbH und das Mietshäuser Syndikat involviert sind, während beim traditionellen Prozess " +
-                "lediglich der Mieter, die Wohnungsgenossenschaft und der Immobilienanbieter benötigt wird. Aber auch " +
-                "einige andere Punkte unterscheiden sich, wie in Tabelle 1 gezeigt wird.</p>", ContentMode.HTML);
+        Label text1 = new Label("<p>In diesem Abschnitt sehen Sie eine tabellarische Gegenüberstellung, sowie " +
+                "eine Zusammenführung in Form eines Transformationsprozesses des traditionellen und des Commoning Prozesses.</p>", ContentMode.HTML);
 
-        Table table = new Table("TABELLE 1 - GEGENÜBERSTELLUNG");
+        Table table = new Table("GEGENÜBERSTELLUNG");
         table.setWidth("100%");
 
         table.addContainerProperty("Traditionelles Modell", String.class, null);
@@ -567,49 +438,15 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
 
         String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
         FileResource resource1 = new FileResource(new File(basepath + "/images/Transformation SID.png"));
-        Image image1 = new Image("ABBILDUNG 1 TRANSFORMATIONSPROZESSMODELL – SUBJEKT-INTERAKTIONS-DIAGRAMM (SID) IN S-BPMN", resource1);
+        Image image1 = new Image("TRANSFORMATIONSPROZESSMODELL – SUBJEKT-INTERAKTIONS-DIAGRAMM (SID) IN S-BPMN", resource1);
         image1.setWidth("80%");
 
-        Label text2 = new Label("<p>Folgend widmen wir uns der Transformation, d.h. wie der klassische Prozess" +
-                " mit dem Commoning Prozess verbunden werden kann. Abbildung 1 zeigt überblicksmäßig die Subjekte und " +
-                "deren Interaktionen im Transformationsprozess. Diese Lösung ist nur eine von zahlreichen Möglichkeiten" +
-                ", wie das traditionelle Modell mit dem Commoningmodell verknüpft werden kann. </p>", ContentMode.HTML);
+        Label text2 = new Label("<p>Folgend werden die Interaktionen des Transformationsprozess in einem subjektorientierenden Diagramm dargestellt. </p>", ContentMode.HTML);
 
         VerticalLayout image2Layout = new VerticalLayout();
         image2Layout.setWidth("100%");
         image2Layout.setSpacing(true);
         image2Layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-
-        FileResource resource2 = new FileResource(new File(basepath + "/images/Transformationsprozess.png"));
-        Image image2 = new Image("ABBILDUNG 2 - TRANSFORMATIONSPROZESSMODELL IN BPMN", resource2);
-        image2.setWidth("100%");
-        Label text3 = new Label("<p>Wie sich die Subjekte im Detail verhalten wird in Abbildung 2 dargestellt" +
-                " und nachfolgend erklärt. </p>", ContentMode.HTML);
-
-        Label text4 = new Label("<p>Bei unserer Transformation startet der Prozess, wie beim traditionellen " +
-                "Prozess, bei der Wohnungsgenossenschaft, die eine Immobilie erwerben möchte. Dabei werden zuerst " +
-                "Informationen über die Immobilie gesammelt und es wird dann die Entscheidung getroffen, dem " +
-                "Immobilienanbieter ein Angebot zu senden oder nicht (siehe 2). </p>" +
-                "<p>Wie beim traditionellen Prozess unterbreitet die Wohnungsgenossenschaft dem Immobilienanbieter ein" +
-                " Angebot, dass angenommen oder abgelehnt werden kann (siehe 1). </p>" +
-                "<p>Erwirbt die Genossenschaft das Objekt kann Sie entscheiden, ob die Immobilie weiterverkauft oder " +
-                "behalten werden soll (siehe 3). An dieser Stelle wird die Entscheidung getroffen ob die " +
-                "Immobilie im Besitz der Wohnungsgenossenschaft bleibt und somit der klassische Prozess weiterverfolgt " +
-                "wird, oder ob die Immobilie weiterverkauft wird und der Commoning Prozess in Kraft treten soll.</p>" +
-                "<p>Wird die Immobilie weiterverkauft, bietet die Wohnungsgenossenschaft die Immobilien den dort " +
-                "wohnhaften Mietern zum Kauf an. Auch hier haben die Mieter wieder die Entscheidungsfreiheit das " +
-                "Angebot anzunehmen oder abzulehnen (siehe 5). </p>" +
-                "<p>Nehmen sie das Angebot an, so müssen die Mieter einen Hausverein gründen und die Geldmittel " +
-                "aufbringen, um den Kauf abschließen zu können (siehe 7). </p>" +
-                "<p>Gemeinsam mit der Wohnungsgenossenschaft gründet der Hausverein eine Hausbesitz GmbH, damit die " +
-                "Immobilie „unverkäuflich“ wird und dem Markt entzogen wird, was für den „Common Good“ Gedanken " +
-                "besonders wichtig ist (siehe 8 und 9).</p>" +
-                "<p>Ist der Kauf abgeschlossen, bedienen die Mieter die Kapitalkosten und den Bewirtschaftungsbeitrag " +
-                "in Form von Miete (siehe 6). </p><br>" +
-                "<p>Zum besseren Verständnis stellen wir das Domänenmodell und das Commoningmodell wie in diesem " +
-                "Abschnitt als BPMNModell bereits detailliert dargestellt nochmal zusammen (siehe Abbildung 3): </p>" +
-                "<p></p>" +
-                "<p></p>", ContentMode.HTML);
 
         VerticalLayout image3Layout = new VerticalLayout();
         image3Layout.setWidth("100%");
@@ -617,12 +454,9 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         image3Layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
         FileResource resource3 = new FileResource(new File(basepath + "/images/Skizze_Modelle.png"));
-        Image image3 = new Image("ABBILDUNG 3 - ZUSAMMENFASSUNG SID-MODELLE", resource3);
-        image3.setWidth("100%");
+        Image image3 = new Image("ZUSAMMENFÜHRUNG DER PROZESSE ZUM TRANSFORMATIONSPROZESS", resource3);
+        image3.setWidth("80%");
 
-        Label text5 = new Label("<p>Die Pfeile zeigen, welche Subjekte aus den einzelnen Modellen " +
-                "übernommen werden können. Wie bereits eingangs beschrieben, können einzelne Prozessschritte " +
-                "aus den jeweiligen Modellen übernommen und transformiert werden. </p>", ContentMode.HTML);
 
         content.addComponent(processlabel);
         content.addComponent(text1);
@@ -632,17 +466,9 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         image1layout.addComponent(image1);
         content.addComponent(image1layout);
 
-        content.addComponent(text3);
-
-        image2Layout.addComponent(image2);
-        content.addComponent(image2Layout);
-
-        content.addComponent(text4);
 
         image3Layout.addComponent(image3);
         content.addComponent(image3Layout);
-
-        content.addComponent(text5);
 
         return content;
     }
@@ -670,6 +496,23 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         return content;
     }
 
+
+    private Component createPageBodyForImpressum() {
+        VerticalLayout content = new VerticalLayout();
+        content.setWidth("100%");
+        content.addComponent(new Label("<p><b>Impressum</b></p>" +
+                "<p></p>", ContentMode.HTML)); //TODO Text für Impressum ergänzen
+        return content;
+    }
+
+    private Component createPageBodyForDatenschutz() {
+        VerticalLayout content = new VerticalLayout();
+        content.setWidth("100%");
+        content.addComponent(new Label("<p><b>Datenschutz</b></p>" +
+                "<p></p>", ContentMode.HTML)); //TODO Text für Datenschutz ergänzen
+        return content;
+    }
+
     private Component createPageBodyForProzesse_Execution() {
         VerticalLayout content = new VerticalLayout();
         content.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
@@ -679,14 +522,14 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
         Label label = new Label("Prozessausführung", ContentMode.HTML);
         label.addStyleName(ValoTheme.LABEL_H3);
         content.addComponent(label);
-        content.addComponent(new Label("<p>Hier könnnen Sie den oben theoretisch erklärten Prozess " +
+        content.addComponent(new Label("<p>Hier könnnen Sie den Prozess " +
                 "selbst durchlaufen, um ein besseres Verständnis für den Prozess zu bekommen und zu sehen wie einfach " +
-                "bzw. wie komplex der jeweilige Prozess ist. Um den Prozess zu durchlaufen müssen sie nur in den jeweiligen " +
+                "bzw. wie komplex der jeweilige Prozess ist. Um den Prozess zu durchlaufen müssen Sie nur in den jeweiligen " +
                 " Subjekten “Weiter“ klicken. Sobald der Prozess zu Ende ist können Sie ihn über einen Button neu starten. </p>" +
                 "<p>Um den Überblick in der Ausführung nicht zu verlieren können Sie das Prozessmodell rechts zur" +
                 " Orientierung nutzen. Hier können Sie zwischen verschiedensten Sichten wählen. Der aktuelle " +
                 "Prozessschritt wird grün hinterlegt. Bereits durchlaufene Prozessschritte werden grau hinterlegt. " +
-                " Die Modelle werden automatisch generiert, wodurch sie bei jeder neuen Ausführung geringfügig" +
+                "Die Modelle werden automatisch generiert, wodurch sie bei jeder neuen Ausführung geringfügig" +
                 " anders aussehen können. Inhaltlich bleiben sie jedoch gleich.</p>", ContentMode.HTML));
         createContentLayout();
         content.addComponent(mainLayoutFrame);
@@ -1091,7 +934,7 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
 //            createBasicLayout();
             createGlobalLayout();
             pagebody.removeAllComponents();
-            pagebody.addComponent(createPageBodyForProzesse_Execution()); //todo neu check
+            pagebody.addComponent(createPageBodyForProzesse_Execution());
             simulator = new Simulator(currentInstance, subjectPanels, CoMPArEUI.this);
             if (fileStorageHandler == null) fileStorageHandler = new FileStorageHandler();
             fileStorageHandler.newProcessStarted();
@@ -1335,7 +1178,7 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
             //            createBasicLayout();
             createGlobalLayout();
             pagebody.removeAllComponents();
-            pagebody.addComponent(createPageBodyForProzesse_Execution()); //todo neu check
+            pagebody.addComponent(createPageBodyForProzesse_Execution());
             updateUI();
         }
     }
@@ -1414,7 +1257,7 @@ public class CoMPArEUI extends UI implements SliderPanelListener {
 //            createBasicLayout();
                 createGlobalLayout();
                 pagebody.removeAllComponents();
-                pagebody.addComponent(createPageBodyForProzesse_Execution()); //todo neu check
+                pagebody.addComponent(createPageBodyForProzesse_Execution());
                 scaffoldingManager.updateScaffolds(currentInstance, currentInstance.getAvailableStateForSubject(s));
                 updateUI();
             }
